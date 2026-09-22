@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>FreshMart - Grocery Products</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="top-header">
+
+
+        <!-- LOGO -->
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                🥬
+            </div>
+
+            <div>
+
+                <h1>FreshMart</h1>
+
+                <small>
+                    CHECKOUT COUNTER
+                </small>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- SEARCH -->
+
+        <div class="search-header">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="🔍 Search products..."
+                onkeyup="searchProducts()"
+            >
+
+        </div>
+
+
+
+        <!-- DATE AND TIME -->
+
+        <div class="date-time">
+
+            <div id="currentTime">
+                00:00:00
+            </div>
+
+            <div id="currentDate">
+                Loading date...
+            </div>
+
+        </div>
+
+
+
+        <!-- CART -->
+
+        <a
+            href="cart.html"
+            class="cart-button"
+        >
+
+            🛒
+
+            <span id="cartCount">
+                0
+            </span>
+
+            Items
+
+        </a>
+
+
+    </header>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main>
+
+
+        <h2>
+            All Grocery Products
+        </h2>
+
+
+        <p>
+            Select the product and quantity you want to buy.
+        </p>
+
+
+
+        <!-- SEARCH -->
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="searchInputMobile"
+                placeholder="🔍 Search products..."
+                onkeyup="searchProductsMobile()"
+            >
+
+        </div>
+
+
+
+        <!-- ================= PRODUCT CONTAINER ================= -->
+
+        <div
+            id="productContainer"
+            class="product-container"
+        >
+
+            <!-- Products will automatically appear here -->
+
+        </div>
+
+
+
+        <!-- ================= VIEW CART ================= -->
+
+        <div class="cart-section">
+
+            <a
+                href="cart.html"
+                class="header-cart"
+            >
+
+                🛒 View Cart
+
+                (<span id="cartCountBottom">
+                    0
+                </span>)
+
+            </a>
+
+        </div>
+
+
+    </main>
+
+
+
+    <!-- ================= PRODUCTS JAVASCRIPT ================= -->
+
+    <script src="js/products.js"></script>
+
+
+
+    <!-- ================= DATE & TIME ================= -->
+
+    <script>
+
+        function updateDateTime() {
+
+            const now = new Date();
+
+
+            // TIME
+
+            const time =
+                now.toLocaleTimeString("en-IN", {
+
+                    hour: "2-digit",
+
+                    minute: "2-digit",
+
+                    second: "2-digit",
+
+                    hour12: true
+
+                });
+
+
+            // DATE
+
+            const date =
+                now.toLocaleDateString("en-IN", {
+
+                    day: "2-digit",
+
+                    month: "short",
+
+                    year: "numeric"
+
+                });
+
+
+            document.getElementById(
+                "currentTime"
+            ).textContent = time;
+
+
+            document.getElementById(
+                "currentDate"
+            ).textContent = date;
+
+        }
+
+
+        // Start clock
+
+        updateDateTime();
+
+
+        // Update every second
+
+        setInterval(
+            updateDateTime,
+            1000
+        );
+
+    </script>
+
+
+
+    <!-- ================= MOBILE SEARCH ================= -->
+
+    <script>
+
+        function searchProductsMobile() {
+
+            const mainSearch =
+                document.getElementById(
+                    "searchInput"
+                );
+
+
+            const mobileSearch =
+                document.getElementById(
+                    "searchInputMobile"
+                );
+
+
+            mainSearch.value =
+                mobileSearch.value;
+
+
+            searchProducts();
+
+        }
+
+    </script>
+
+
+
+    <!-- ================= CART BOTTOM COUNT ================= -->
+
+    <script>
+
+        function updateBottomCartCount() {
+
+            const cart =
+                JSON.parse(
+                    localStorage.getItem("cart")
+                ) || [];
+
+
+            let total = 0;
+
+
+            cart.forEach(function(item) {
+
+                total +=
+                    Number(item.quantity) || 0;
+
+            });
+
+
+            const bottomCount =
+                document.getElementById(
+                    "cartCountBottom"
+                );
+
+
+            if (bottomCount) {
+
+                bottomCount.textContent =
+                    total;
+
+            }
+
+        }
+
+
+        updateBottomCartCount();
+
+
+        setInterval(
+            updateBottomCartCount,
+            500
+        );
+
+    </script>
+
+
+</body>
+
+</html>
