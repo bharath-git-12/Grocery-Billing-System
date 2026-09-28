@@ -37,13 +37,6 @@ const products = [
         icon: "🥔"
     },
     {
-        id: 6,
-        name: "Carrot",
-        price: 50,
-        unit: "kg",
-        icon: "🥕"
-    },
-    {
         id: 7,
         name: "Ladies Finger",
         price: 45,

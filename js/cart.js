@@ -45,11 +45,10 @@ function displayCart() {
         updateBill();
 
         return;
-
     }
 
 
-    // Display products
+    // ================= DISPLAY PRODUCTS =================
 
     cart.forEach((item, index) => {
 
@@ -260,7 +259,7 @@ function updateBill() {
 
 async function placeOrder() {
 
-    // Check cart
+    // ================= CHECK CART =================
 
     if (cart.length === 0) {
 
@@ -289,6 +288,42 @@ async function placeOrder() {
         );
 
         window.location.href = "index.html";
+
+        return;
+
+    }
+
+
+    // ================= GET DELIVERY LOCATION =================
+
+    const locationInput =
+        document.getElementById("deliveryLocation");
+
+
+    if (!locationInput) {
+
+        alert(
+            "❌ Delivery location field not found."
+        );
+
+        return;
+
+    }
+
+
+    const deliveryLocation =
+        locationInput.value.trim();
+
+
+    // ================= CHECK LOCATION =================
+
+    if (!deliveryLocation) {
+
+        alert(
+            "📍 Please enter your delivery location."
+        );
+
+        locationInput.focus();
 
         return;
 
@@ -347,6 +382,8 @@ async function placeOrder() {
             customer_name: username,
 
             department: department,
+
+            delivery_location: deliveryLocation,
 
             total_amount: grandTotal,
 
@@ -430,6 +467,9 @@ async function placeOrder() {
 
         "Department: " +
         department +
+
+        "\n\n📍 Delivery Location:\n" +
+        deliveryLocation +
 
         "\n\nOrder ID: " +
         order.id +
