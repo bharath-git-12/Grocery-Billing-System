@@ -1,3 +1,8 @@
+
+// ======================================
+// GROCERY BILLING SYSTEM - LOGIN
+// ======================================
+
 async function login() {
 
     // Get username
@@ -12,118 +17,130 @@ async function login() {
         .getElementById("password")
         .value;
 
-    // Department users
+    // All users
     const users = {
+
+        admin: {
+            email: "admin@gmail.com",
+            department: "ADMIN",
+            role: "admin"
+        },
 
         aids: {
             email: "aids@grocerybilling.com",
-            department: "AIDS"
+            department: "AIDS",
+            role: "customer"
         },
 
         cse: {
             email: "cse@grocerybilling.com",
-            department: "CSE"
+            department: "CSE",
+            role: "customer"
         },
 
         ece: {
             email: "ece@grocerybilling.com",
-            department: "ECE"
+            department: "ECE",
+            role: "customer"
         },
 
         it: {
             email: "it@grocerybilling.com",
-            department: "IT"
+            department: "IT",
+            role: "customer"
         }
 
     };
 
-
     // Clear old message
-    document.getElementById("message").innerHTML = "";
-
+    const message = document.getElementById("message");
+    message.innerHTML = "";
 
     // Check username
     if (!users[username]) {
-
-        document.getElementById("message").innerHTML =
-            "❌ Invalid Username";
-
+        message.innerHTML = "❌ Invalid Username";
         return;
     }
 
-
-    // Get user details
-    const email = users[username].email;
-    const department = users[username].department;
-
-
-    // Check password empty
+    // Check password
     if (!password) {
-
-        document.getElementById("message").innerHTML =
-            "❌ Please enter your password";
-
+        message.innerHTML = "❌ Please enter your password";
         return;
     }
 
+    const userDetails = users[username];
 
-    // Login using Supabase Authentication
+    // Supabase login
     const { data, error } =
         await supabaseClient.auth.signInWithPassword({
-
-            email: email,
+            email: userDetails.email,
             password: password
-
         });
-
 
     // Check login error
     if (error) {
-
-        console.error(
-            "SUPABASE LOGIN ERROR:",
-            error
-        );
-
-        document.getElementById("message").innerHTML =
-            "❌ " + error.message;
-
+        console.error("LOGIN ERROR:", error);
+        message.innerHTML = "❌ " + error.message;
         return;
     }
 
+    // ==================================
+    // ADMIN ROLE VERIFICATION
+    // ==================================
 
-    // Login successful
-    console.log(
-        "Login successful:",
-        data.user.email
-    );
+    if (userDetails.role === "admin") {
 
+        const { data: roleData, error: roleError } =
+            await supabaseClient
+                .from("user_roles")
+                .select("role")
+                .eq("user_id", data.user.id)
+                .maybeSingle();
 
-    // Save login information
-    localStorage.setItem(
-        "loggedIn",
-        "true"
-    );
+        if (roleError || !roleData || roleData.role !== "admin") {
 
-    localStorage.setItem(
-        "username",
-        username
-    );
+            console.error("Admin verification failed:", roleError);
 
-    localStorage.setItem(
-        "department",
-        department
-    );
+            await supabaseClient.auth.signOut();
 
+            message.innerHTML =
+                "❌ Admin access verification failed.";
 
-    // Success message
-    alert(
-        "Login Successful!\n\n" +
-        "Department: " +
-        department
-    );
+            return;
+        }
 
+    }
 
-    // Go to products page
-    window.location.href = "products.html";
+    // ==================================
+    // SAVE LOGIN INFORMATION
+    // ==================================
+
+    localStorage.setItem("loggedIn", "true");
+    localStorage.setItem("username", username);
+    localStorage.setItem("department", userDetails.department);
+
+    console.log("Login successful:", data.user.email);
+
+    // ==================================
+    // REDIRECT BASED ON USER TYPE
+    // ==================================
+
+    if (userDetails.role === "admin") {
+
+        alert("Admin Login Successful!");
+
+        window.location.href = "admin.html";
+
+    } else {
+
+        alert(
+            "Login Successful!\n\n" +
+            "Department: " +
+            userDetails.department
+        );
+
+        window.location.href = "products.html";
+
+    }
+
 }

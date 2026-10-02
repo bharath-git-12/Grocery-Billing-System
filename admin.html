@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Grocery Billing System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f3f6f4;
+            color: #26332b;
+        }
+
+        header {
+            background: #198754;
+            color: white;
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        header h2 {
+            font-size: 23px;
+        }
+
+        .logout-btn {
+            background: white;
+            color: #198754;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 94%;
+            max-width: 1400px;
+            margin: 25px auto;
+        }
+
+        .welcome {
+            margin-bottom: 20px;
+        }
+
+        .welcome h2 {
+            margin-bottom: 7px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #00000010;
+        }
+
+        .stat-card h3 {
+            color: #198754;
+            font-size: 27px;
+            margin-top: 10px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .filters input,
+        .filters select {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: white;
+            min-width: 180px;
+            flex: 1;
+        }
+
+        .refresh-btn {
+            background: #198754;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .table-container {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+            box-shadow: 0 2px 8px #00000010;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1050px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 13px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            vertical-align: top;
+            font-size: 14px;
+        }
+
+        th {
+            background: #e8f5ed;
+            color: #176b42;
+        }
+
+        .status-select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            min-width: 140px;
+        }
+
+        .whatsapp-btn {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 8px 10px;
+            background: #25D366;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .message {
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .error {
+            background: #ffe5e5;
+            color: #a00000;
+        }
+
+        .success {
+            background: #d9f7e5;
+            color: #126536;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 25px;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            header h2 {
+                font-size: 18px;
+            }
+
+            .container {
+                width: 96%;
+            }
+
+            .table-container {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h2>🛒 Grocery Billing - Admin Dashboard</h2>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
+</header>
+
+<main class="container">
+
+    <section class="welcome">
+        <h2>Welcome, Admin 👋</h2>
+        <p>Manage customer orders and delivery status.</p>
+    </section>
+
+    <div id="messageBox" class="message"></div>
+
+    <section class="stats">
+        <div class="stat-card">
+            Total Orders
+            <h3 id="totalOrders">0</h3>
+        </div>
+
+        <div class="stat-card">
+            Placed Orders
+            <h3 id="placedOrders">0</h3>
+        </div>
+
+        <div class="stat-card">
+            Delivered Orders
+            <h3 id="deliveredOrders">0</h3>
+        </div>
+
+        <div class="stat-card">
+            Total Sales
+            <h3 id="totalSales">₹0.00</h3>
+        </div>
+    </section>
+
+    <section class="filters">
+        <input
+            type="search"
+            id="searchInput"
+            placeholder="Search name, mobile or order ID">
+
+        <select id="statusFilter">
+            <option value="All">All Status</option>
+            <option value="Placed">Placed</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Preparing">Preparing</option>
+            <option value="Out for Delivery">Out for Delivery</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Cancelled">Cancelled</option>
+        </select>
+
+        <button class="refresh-btn" id="refreshBtn">
+            ↻ Refresh Orders
+        </button>
+    </section>
+
+    <section class="table-container">
+        <h3 style="margin-bottom: 15px;">Customer Orders</h3>
+
+        <div id="loadingMessage" class="empty">
+            Loading orders...
+        </div>
+
+        <table id="ordersTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer Details</th>
+                    <th>Delivery Location</th>
+                    <th>Products</th>
+                    <th>Total Amount</th>
+                    <th>Order Date</th>
+                    <th>Status</th>
+                    <th>WhatsApp</th>
+                </tr>
+            </thead>
+
+            <tbody id="ordersBody"></tbody>
+        </table>
+
+        <div id="emptyMessage" class="empty" style="display:none;">
+            No customer orders found.
+        </div>
+    </section>
+
+</main>
+
+<!-- Supabase connection -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/admin.js"></script>
+
+</body>
+</html>

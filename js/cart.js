@@ -1,3 +1,4 @@
+
 // ================= CART =================
 
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -273,27 +274,6 @@ async function placeOrder() {
     }
 
 
-    // ================= GET LOGIN USER =================
-
-    const {
-        data: { user },
-        error: userError
-    } = await supabaseClient.auth.getUser();
-
-
-    if (userError || !user) {
-
-        alert(
-            "❌ Please login before placing an order."
-        );
-
-        window.location.href = "index.html";
-
-        return;
-
-    }
-
-
     // ================= GET DELIVERY LOCATION =================
 
     const locationInput =
@@ -302,9 +282,7 @@ async function placeOrder() {
 
     if (!locationInput) {
 
-        alert(
-            "❌ Delivery location field not found."
-        );
+        alert("❌ Delivery location field not found.");
 
         return;
 
@@ -315,15 +293,60 @@ async function placeOrder() {
         locationInput.value.trim();
 
 
-    // ================= CHECK LOCATION =================
-
     if (!deliveryLocation) {
 
-        alert(
-            "📍 Please enter your delivery location."
-        );
+        alert("📍 Please enter your delivery location.");
 
         locationInput.focus();
+
+        return;
+
+    }
+
+
+    // ================= GET CUSTOMER MOBILE =================
+
+    const mobileInput =
+        document.getElementById("customerMobile");
+
+
+    if (!mobileInput) {
+
+        alert("❌ Customer mobile number field not found.");
+
+        return;
+
+    }
+
+
+    const customerMobile =
+        mobileInput.value.trim();
+
+
+    if (!/^[6-9]\d{9}$/.test(customerMobile)) {
+
+        alert("📱 Please enter a valid 10-digit Indian mobile number.");
+
+        mobileInput.focus();
+
+        return;
+
+    }
+
+
+    // ================= GET LOGIN USER =================
+
+    const {
+        data: { user },
+        error: userError
+    } = await supabaseClient.auth.getUser();
+
+
+    if (userError || !user) {
+
+        alert("❌ Please login before placing an order.");
+
+        window.location.href = "index.html";
 
         return;
 
@@ -343,8 +366,7 @@ async function placeOrder() {
         const quantity =
             Number(item.quantity) || 0;
 
-        subtotal +=
-            price * quantity;
+        subtotal += price * quantity;
 
     });
 
@@ -381,6 +403,8 @@ async function placeOrder() {
 
             customer_name: username,
 
+            customer_mobile: customerMobile,
+
             department: department,
 
             delivery_location: deliveryLocation,
@@ -400,10 +424,7 @@ async function placeOrder() {
 
     if (orderError) {
 
-        console.error(
-            "ORDER ERROR:",
-            orderError
-        );
+        console.error("ORDER ERROR:", orderError);
 
         alert(
             "❌ Order could not be placed.\n\n" +
@@ -444,10 +465,7 @@ async function placeOrder() {
 
     if (itemsError) {
 
-        console.error(
-            "ORDER ITEMS ERROR:",
-            itemsError
-        );
+        console.error("ORDER ITEMS ERROR:", itemsError);
 
         alert(
             "❌ Order created, but products could not be saved.\n\n" +
@@ -459,24 +477,82 @@ async function placeOrder() {
     }
 
 
-    // ================= SUCCESS =================
+    // ================= WHATSAPP ADMIN MESSAGE =================
 
-    alert(
+    const adminMessage =
 
-        "✅ ORDER PLACED SUCCESSFULLY!\n\n" +
+        "🛒 NEW GROCERY ORDER\n\n" +
 
-        "Department: " +
-        department +
+        "Order ID: " + order.id + "\n" +
 
-        "\n\n📍 Delivery Location:\n" +
-        deliveryLocation +
+        "Customer: " + username + "\n" +
 
-        "\n\nOrder ID: " +
-        order.id +
+        "Department: " + department + "\n" +
 
-        "\n\nGrand Total: ₹" +
-        grandTotal.toFixed(2)
+        "Customer Mobile: +91" + customerMobile + "\n\n" +
 
+        "PRODUCT DETAILS:\n" +
+
+        orderItems.map(item =>
+
+            item.product_name +
+            " x " + item.quantity +
+            " = ₹" +
+            (item.price * item.quantity).toFixed(2)
+
+        ).join("\n") +
+
+        "\n\nSubtotal: ₹" + subtotal.toFixed(2) +
+
+        "\nGST (5%): ₹" + gst.toFixed(2) +
+
+        "\nGrand Total: ₹" + grandTotal.toFixed(2) +
+
+        "\n\n📍 Delivery Location:\n" + deliveryLocation +
+
+        "\n\nStatus: Order Placed";
+
+
+    // ================= WHATSAPP CUSTOMER MESSAGE =================
+
+    const customerMessage =
+
+        "Hi " + username + "! 😊\n\n" +
+
+        "Your grocery order has been placed successfully! ✅\n\n" +
+
+        "Order ID: " + order.id +
+
+        "\nGrand Total: ₹" + grandTotal.toFixed(2) +
+
+        "\n\nWe will update you when your order is on the way. 🚚" +
+
+        "\n\nThank you for ordering with us!";
+
+
+    // ================= STORE NOTIFICATION DETAILS =================
+
+    sessionStorage.setItem(
+        "adminMessage",
+        adminMessage
+    );
+
+
+    sessionStorage.setItem(
+        "customerMessage",
+        customerMessage
+    );
+
+
+    sessionStorage.setItem(
+        "customerMobile",
+        "91" + customerMobile
+    );
+
+
+    sessionStorage.setItem(
+        "orderId",
+        String(order.id)
     );
 
 
@@ -487,10 +563,9 @@ async function placeOrder() {
     cart = [];
 
 
-    // ================= GO PRODUCTS =================
+    // ================= OPEN WHATSAPP NOTIFICATION PAGE =================
 
-    window.location.href =
-        "products.html";
+    window.location.href = "whatsapp-notify.html";
 
 }
 

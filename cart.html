@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,9 +15,7 @@
 
 </head>
 
-
 <body>
-
 
     <!-- ================= HEADER ================= -->
 
@@ -42,7 +41,6 @@
     <!-- ================= MAIN ================= -->
 
     <main class="cart-page">
-
 
         <h2>🛒 Your Shopping Cart</h2>
 
@@ -98,8 +96,36 @@
                 <textarea
                     id="deliveryLocation"
                     placeholder="Enter your location / delivery address"
-                    rows="4">
+                    rows="4"
+                    required>
                 </textarea>
+
+            </div>
+
+
+            <!-- ================= CUSTOMER MOBILE NUMBER ================= -->
+
+            <div class="location-section">
+
+                <h3>📱 Customer WhatsApp Number</h3>
+
+                <p>
+                    Enter your 10-digit WhatsApp mobile number:
+                </p>
+
+                <input
+                    type="tel"
+                    id="customerMobile"
+                    placeholder="Example: 9876543210"
+                    maxlength="10"
+                    inputmode="numeric"
+                    autocomplete="tel"
+                    required>
+
+                <small>
+                    Your order confirmation will be prepared
+                    for this WhatsApp number.
+                </small>
 
             </div>
 
@@ -123,11 +149,9 @@
              class="order-success"
              style="display:none;">
 
-
             <h2>
                 🎉 Your Order Placed Successfully!
             </h2>
-
 
             <p>
                 Scan the QR Code to view your order details
@@ -154,9 +178,7 @@
 
             </button>
 
-
         </div>
-
 
     </main>
 
@@ -172,6 +194,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script src="js/supabase.js"></script>
+
+
+    <!-- ================= WHATSAPP CONFIGURATION ================= -->
+
+    <script src="js/whatsapp.js"></script>
+
 
     <!-- ================= CART JAVASCRIPT ================= -->
 
