@@ -114,21 +114,6 @@
 
 
 
-        <!-- SEARCH -->
-
-        <div class="search-box">
-
-            <input
-                type="text"
-                id="searchInputMobile"
-                placeholder="🔍 Search products..."
-                onkeyup="searchProductsMobile()"
-            >
-
-        </div>
-
-
-
         <!-- ================= PRODUCT CONTAINER ================= -->
 
         <div
@@ -234,36 +219,6 @@
             updateDateTime,
             1000
         );
-
-    </script>
-
-
-
-    <!-- ================= MOBILE SEARCH ================= -->
-
-    <script>
-
-        function searchProductsMobile() {
-
-            const mainSearch =
-                document.getElementById(
-                    "searchInput"
-                );
-
-
-            const mobileSearch =
-                document.getElementById(
-                    "searchInputMobile"
-                );
-
-
-            mainSearch.value =
-                mobileSearch.value;
-
-
-            searchProducts();
-
-        }
 
     </script>
 
