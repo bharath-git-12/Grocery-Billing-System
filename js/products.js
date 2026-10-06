@@ -191,14 +191,6 @@ const products = [
         icon: "🦐"
     },
 
-    {
-        id: 24,
-        name: "White Fish",
-        price: 450,
-        unit: "kg",
-        icon: "🐟"
-    },
-
 
     // Plant-Based Proteins
 
